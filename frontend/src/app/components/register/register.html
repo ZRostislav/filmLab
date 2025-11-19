@@ -1,0 +1,59 @@
+<div class="flex justify-center px-4">
+  <div class="bg-white p-6 sm:p-8 rounded-xl w-full max-w-sm sm:max-w-md">
+    <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center text-gray-800">Регистрация</h2>
+    <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)" class="space-y-4" novalidate>
+      <!-- Email -->
+      <div>
+        <input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          #emailCtrl="ngModel"
+          placeholder="Email"
+          required
+          email
+          class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <div class="text-red-500 text-sm mt-1" *ngIf="emailCtrl.invalid && emailCtrl.touched">
+          <span *ngIf="emailCtrl.errors?.['required']">Email обязателен.</span>
+          <span *ngIf="emailCtrl.errors?.['email']">Введите корректный email.</span>
+        </div>
+      </div>
+
+      <!-- Пароль -->
+      <div>
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          #passwordCtrl="ngModel"
+          placeholder="Пароль"
+          required
+          minlength="8"
+          pattern="^(?=.*[A-Z]).+$"
+          class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <div class="text-red-500 text-sm mt-1" *ngIf="passwordCtrl.invalid && passwordCtrl.touched">
+          <span *ngIf="passwordCtrl.errors?.['required']">Пароль обязателен.</span>
+          <span *ngIf="passwordCtrl.errors?.['minlength']">Минимум 8 символов.</span>
+          <span *ngIf="passwordCtrl.errors?.['pattern']">
+            Пароль должен содержать хотя бы одну заглавную букву.
+          </span>
+        </div>
+      </div>
+
+      <!-- Ошибка регистрации -->
+      <div *ngIf="registerError" class="text-red-500 text-sm text-center">
+        {{ registerError }}
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid"
+        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition disabled:opacity-50"
+      >
+        Зарегистрироваться
+      </button>
+    </form>
+  </div>
+</div>

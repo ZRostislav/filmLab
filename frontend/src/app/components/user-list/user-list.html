@@ -1,0 +1,217 @@
+<div class="p-4 sm:p-6 space-y-6 bg-gray-100 rounded-2xl">
+  <!-- Ошибка -->
+  <div
+    *ngIf="error"
+    class="border border-red-400 text-red-700 bg-red-50 p-3 rounded-lg shadow-sm flex items-center gap-2"
+  >
+    ⚠️ {{ error }}
+  </div>
+
+  <!-- Загрузка -->
+  <div *ngIf="loading" class="text-gray-500 flex items-center gap-2 justify-center">
+    <span class="animate-spin">⏳</span> Загрузка...
+  </div>
+
+  <!-- Панель отчётов -->
+  <div
+    class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-center items-center border border-gray-200"
+  >
+    <button
+      class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-lg hover:from-blue-500 hover:to-blue-400 transition text-sm font-medium shadow"
+      (click)="downloadUsersReport()"
+    >
+      📄 Отчёт о всех пользователях
+    </button>
+
+    <button
+      class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-lg hover:from-blue-500 hover:to-blue-400 transition text-sm font-medium shadow"
+      (click)="downloadAllPhotosReport()"
+    >
+      📸 Отчёт о всех фотографиях
+    </button>
+
+    <div class="flex flex-wrap items-center gap-2 text-gray-700 text-sm font-medium">
+      <label>От:</label>
+      <input
+        type="date"
+        [(ngModel)]="dateFrom"
+        class="border px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+
+      <label>До:</label>
+      <input
+        type="date"
+        [(ngModel)]="dateTo"
+        class="border px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+
+      <button
+        (click)="downloadMonthlyPhotosReport()"
+        class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-lg hover:from-blue-500 hover:to-blue-400 transition text-sm font-medium shadow"
+      >
+        🗓️ Отчёт за период
+      </button>
+    </div>
+  </div>
+
+  <!-- Таблица пользователей -->
+  <div *ngIf="!selectedUser && !selectedPhoto" class="bg-white rounded-2xl shadow-lg p-4">
+    <div class="overflow-x-auto">
+      <table class="w-full border border-gray-200 rounded-lg text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="px-2 py-2 border text-center w-8">
+              <input type="checkbox" (change)="toggleSelectAll($event)" />
+            </th>
+            <th class="px-2 py-2 border">№</th>
+            <th class="px-2 py-2 border">ID</th>
+            <th class="px-4 py-2 border">Email</th>
+            <th class="px-2 py-2 border text-center w-28">Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let user of users; let i = index"
+            class="hover:bg-blue-50 transition border-b last:border-b-0"
+          >
+            <td class="px-2 py-2 text-center">
+              <input type="checkbox" [(ngModel)]="user.selected" />
+            </td>
+            <td class="px-2 py-2">{{ i + 1 }}</td>
+            <td class="px-2 py-2">{{ user.id }}</td>
+            <td class="px-4 py-2 truncate">{{ user.email }}</td>
+            <td class="px-2 py-2 text-center">
+              <button
+                (click)="fetchPhotos(user)"
+                class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition text-sm shadow-sm"
+              >
+                Фото
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-3 text-center">
+      <button
+        class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-2 rounded-lg hover:from-blue-500 hover:to-blue-400 transition text-sm font-medium shadow"
+        (click)="downloadSelectedUsersReport()"
+      >
+        📄 Отчёт по выбранным пользователям
+      </button>
+    </div>
+  </div>
+
+  <!-- Фото -->
+  <div *ngIf="selectedUser && !selectedPhoto" class="mt-6">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <h2 class="text-xl font-semibold text-gray-800">
+        Фото пользователя: <span class="text-blue-700">{{ selectedUser.email }}</span>
+      </h2>
+      <button
+        (click)="backToUsers()"
+        class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-500 transition text-sm shadow"
+      >
+        ⬅ Назад
+      </button>
+    </div>
+
+    <div
+      *ngIf="photos.length > 0; else noPhotos"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+    >
+      <div
+        *ngFor="let photo of photos"
+        class="bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden flex flex-col"
+      >
+        <div class="w-full h-48 bg-gray-100 overflow-hidden">
+          <img [src]="photo.url" class="w-full h-full object-cover" alt="{{ photo.filename }}" />
+        </div>
+        <div class="p-3 flex flex-col flex-grow">
+          <div class="text-sm mb-2 truncate text-center text-gray-700 font-medium">
+            {{ photo.title ?? photo.filename }}
+          </div>
+          <button
+            (click)="fetchHistory(photo)"
+            class="mt-auto bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition text-sm shadow-sm"
+          >
+            История
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noPhotos>
+      <p class="text-gray-400 text-center">Нет фотографий</p>
+    </ng-template>
+  </div>
+
+  <!-- История -->
+  <div *ngIf="selectedPhoto" class="mt-6 bg-white rounded-2xl shadow-lg p-4">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+      <h2 class="text-xl font-semibold text-gray-800">
+        История файла: <span class="text-blue-700">{{ selectedPhoto.filename }}</span>
+      </h2>
+      <div class="flex gap-2">
+        <button
+          (click)="backToPhotos()"
+          class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-500 transition text-sm shadow"
+        >
+          ⬅ Назад
+        </button>
+
+        <button
+          (click)="downloadPhotoHistoryReport()"
+          class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded hover:from-blue-500 hover:to-blue-400 transition text-sm font-medium shadow"
+          *ngIf="history.length > 0"
+        >
+          📄 Отчёт об истории
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border border-gray-200 rounded-lg text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="px-4 py-2 border">№</th>
+            <th class="px-4 py-2 border">ID</th>
+            <th class="px-4 py-2 border">Файл</th>
+            <th class="px-4 py-2 border">Email</th>
+            <th class="px-2 py-2 border w-32 text-center">Действие</th>
+            <th class="px-4 py-2 border">Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let h of history; let i = index"
+            class="hover:bg-blue-50 transition border-b last:border-b-0"
+          >
+            <td class="px-4 py-2 border">{{ i + 1 }}</td>
+            <td class="px-4 py-2 border">{{ h.change_id }}</td>
+            <td class="px-4 py-2 border">{{ h.photo_filename }}</td>
+            <td class="px-4 py-2 border">{{ h.user_email }}</td>
+            <td class="px-2 py-2 border text-center">
+              <span
+                [ngClass]="{
+                  'text-green-600 font-bold': h.action === 'Создано' || h.action === 'added',
+                  'text-yellow-600 font-bold': h.action === 'Обновлено',
+                  'text-red-600 font-bold': h.action === 'Удалено'
+                }"
+                class="text-sm"
+              >
+                {{ h.action }}
+              </span>
+            </td>
+            <td class="px-4 py-2 border">
+              {{ h.change_time | date : 'dd.MM.yyyy HH:mm' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="history.length === 0" class="text-gray-400 mt-2 text-center">История пуста.</div>
+  </div>
+</div>

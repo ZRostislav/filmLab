@@ -1,0 +1,34 @@
+<div class="max-w-md mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-md">
+  <h2 class="text-xl sm:text-2xl font-bold mb-4 text-gray-800 text-center">Загрузить фото</h2>
+
+  <!-- Выбор файла -->
+  <label
+    class="block w-full mb-4 cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg px-4 py-3 text-center text-gray-700 transition-colors duration-300"
+  >
+    <span *ngIf="!selectedFile">Выберите файл</span>
+    <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+    <input
+      type="file"
+      accept="image/png, image/jpeg, image/jpg, image/webp"
+      (change)="onFileChange($event)"
+      class="hidden"
+    />
+  </label>
+
+  <!-- Ошибка / уведомление -->
+  <div *ngIf="uploadError" class="text-red-500 text-sm mb-4 text-center">
+    {{ uploadError }}
+  </div>
+  <div *ngIf="uploadSuccess" class="text-green-500 text-sm mb-4 text-center">
+    {{ uploadSuccess }}
+  </div>
+
+  <!-- Кнопка загрузки -->
+  <button
+    (click)="onUpload()"
+    [disabled]="!selectedFile || isUploading"
+    class="w-full cursor-pointer bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition disabled:opacity-50"
+  >
+    {{ isUploading ? 'Загрузка...' : 'Загрузить' }}
+  </button>
+</div>

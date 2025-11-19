@@ -1,0 +1,110 @@
+<div class="bg-blue-600 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <!-- Логотип -->
+    <div class="flex justify-start sm:justify-center py-3">
+      <div class="flex items-center gap-3">
+        <img class="w-10 sm:w-12" src="photo.png" alt="logo" />
+        <h1 class="text-2xl sm:text-3xl font-mono text-white">FilmLab</h1>
+      </div>
+    </div>
+
+    <!-- Бургер (только на телефонах) -->
+    <div class="absolute right-4 top-4 sm:hidden">
+      <button class="text-white focus:outline-none" (click)="isMenuOpen = !isMenuOpen">
+        <svg
+          class="w-8 h-8"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="sm:mt-3" [ngClass]="{ hidden: !isMenuOpen, block: isMenuOpen, 'sm:block': true }">
+      <ul
+        class="flex flex-col sm:flex-row sm:justify-center gap-3 sm:gap-6 text-white font-medium items-center py-1"
+      >
+        <!-- Для авторизованных -->
+        <ng-container *ngIf="auth.isLoggedIn(); else guestMenu">
+          <li class="pb-2">
+            <a
+              routerLink="/list"
+              class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-500 transition"
+              >Список фото</a
+            >
+          </li>
+          <li class="pb-2">
+            <a
+              routerLink="/upload"
+              class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-500 transition"
+              >Загрузить фото</a
+            >
+          </li>
+          <li class="pb-2" *ngIf="auth.isAdmin()">
+            <a
+              routerLink="/user-list"
+              class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-500 transition"
+              >Список пользователей</a
+            >
+          </li>
+        </ng-container>
+
+        <!-- Для гостей -->
+        <ng-template #guestMenu>
+          <li class="pb-2">
+            <a
+              routerLink="/upload"
+              class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-500 transition"
+              >Загрузить фото</a
+            >
+          </li>
+        </ng-template>
+
+        <span class="pb-2">Баллы: {{ bonusValue }}</span>
+
+        <!-- Авторизация -->
+        <ng-container *ngIf="!auth.isLoggedIn()">
+          <li class="pb-2">
+            <a
+              routerLink="/login"
+              class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 transition"
+              >Вход</a
+            >
+          </li>
+          <li class="pb-2">
+            <a
+              routerLink="/register"
+              class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 transition"
+              >Регистрация</a
+            >
+          </li>
+        </ng-container>
+
+        <ng-container *ngIf="auth.isLoggedIn()">
+          <li class="pb-2">
+            {{ isAdmin() ? 'Вход администратора выполнен:' : 'Вход выполнен:' }}
+            <strong>{{ auth.getEmail() }}</strong>
+          </li>
+
+          <li class="pb-2">
+            <button
+              (click)="logout()"
+              class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition"
+            >
+              Выход
+            </button>
+          </li>
+        </ng-container>
+      </ul>
+    </nav>
+  </div>
+</div>

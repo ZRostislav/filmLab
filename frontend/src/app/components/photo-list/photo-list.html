@@ -1,0 +1,45 @@
+<div class="max-w-6xl mx-auto p-4 sm:p-6">
+  <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-gray-800 text-center">Список фото</h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+    <div
+      *ngFor="let photo of photos"
+      class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition flex flex-col"
+    >
+      <!-- Фото квадратное -->
+      <div class="w-full aspect-square bg-gray-100 overflow-hidden">
+        <img [src]="photo.url" alt="фото" class="w-full h-full object-cover" />
+      </div>
+
+      <!-- Панель с кнопками под фото -->
+      <div class="p-2 sm:p-3 flex justify-around items-center bg-gray-50 text-xl sm:text-2xl">
+        <!-- Скачать -->
+        <button
+          (click)="downloadPhoto(photo)"
+          class="text-2xl cursor-pointer hover:text-green-600 transition-colors"
+          title="Скачать"
+        >
+          ⬇️
+        </button>
+
+        <!-- Редактировать -->
+        <button
+          (click)="editPhoto(photo)"
+          class="text-2xl cursor-pointer hover:text-blue-600 transition-colors"
+          title="Редактировать"
+        >
+          ✏️
+        </button>
+
+        <!-- Удалить -->
+        <button
+          (click)="deletePhoto(photo.id)"
+          class="text-2xl cursor-pointer hover:text-red-600 transition-colors"
+          title="Удалить"
+        >
+          🗑️
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
